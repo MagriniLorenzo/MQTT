@@ -1,5 +1,5 @@
 import mqtt from 'mqtt';
-import { insertData } from './db.js';
+import { insertSensorData } from './repositories/sensorRepository.js';
 
 const client = mqtt.connect(process.env.MQTT_BROKER_URL);
 
@@ -15,7 +15,7 @@ client.on('message', (topic, message) => {
     const timestamp = new Date();
     const value = parseFloat(payload.value);
 
-    insertData(sensorId, timestamp, value);
+    insertSensorData(sensorId, timestamp, value);
     console.log(`Saved: ${sensorId} - ${value}`);
   } catch (err) {
     console.error('Error:', err.message);
