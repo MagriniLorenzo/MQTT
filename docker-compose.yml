@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mqtt-broker
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mqtt-broker/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  nodered:
+    image: nodered/node-red
+    container_name: node-red
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./node-red/data:/data
+    depends_on:
+      - mosquitto
+
+  postgres:
+    image: postgres:14
+    container_name: pg-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sensors
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  sensor-api:
+    build: ./sensor-api
+    container_name: sensor-api
+    ports:
+      - "3000:3000"
+    environment:
+      - MQTT_BROKER_URL=mqtt://mosquitto
+      - PG_HOST=pg-db
+      - PG_USER=user
+      - PG_PASSWORD=password
+      - PG_DATABASE=sensors
+    depends_on:
+      - mosquitto
+      - postgres
+
+volumes:
+  pgdata:
