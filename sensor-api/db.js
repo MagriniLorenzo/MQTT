@@ -9,10 +9,19 @@ export const pool = new Pool({
 });
 
 await pool.query(`
-  CREATE TABLE IF NOT EXISTS sensor_data (
+  CREATE TABLE IF NOT EXISTS sensors (
     id SERIAL PRIMARY KEY,
-    sensor_id TEXT,
+    name TEXT NOT NULL,
+    tags TEXT[]
+  )
+`);
+
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS sensor_data (
+    sensor_id INTEGER,
     timestamp TIMESTAMPTZ,
-    value FLOAT
+    value FLOAT,
+    PRIMARY KEY (sensor_id, timestamp),
+    FOREIGN KEY (sensor_id) REFERENCES sensors(id) ON DELETE CASCADE
   )
 `);
