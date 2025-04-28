@@ -1,5 +1,5 @@
 import mqtt from 'mqtt';
-import { insertSensorData } from './repositories/sensorRepository.js';
+import { insertSensorData } from './repositories/sensorDataRepository.js';
 
 const client = mqtt.connect(process.env.MQTT_BROKER_URL);
 

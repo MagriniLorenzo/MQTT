@@ -1,5 +1,7 @@
 import { z } from 'zod';
-import { createSensor, listSensors, updateSensor } from '../repositories/sensorRepository.js';
+import { SensorController } from '../repositories/sensorRepository.js';
+
+const sensorController = new SensorController();
 
 const sensorSchema = z.object({
     name: z.string(),
@@ -9,38 +11,38 @@ const sensorSchema = z.object({
 export async function postSensor(req, reply) {
     const parseResult = sensorSchema.safeParse(req.body);
     if (!parseResult.success) {
-    return reply.status(400).send({ error: parseResult.error.message });
+      return reply.status(400).send({ error: parseResult.error.message });
     }
-
+  
     try {
-    const sensorId = await createSensor(parseResult.data);
-    reply.code(201).send({ success: true});
+      const sensor = await sensorController.create(parseResult.data);
+      reply.code(201).send(sensor);
     } catch (err) {
-    reply.status(500).send({ error: 'Error' });
+      reply.status(500).send({ error: 'Error' });
     }
-}
+  }
 
-export async function getSensors(req, reply) {
+  export async function getSensors(req, reply) {
     try {
-        const sensors = await listSensors();
-        reply.send(sensors);
+      const sensors = await sensorController.get();
+      reply.send(sensors);
     } catch (err) {
-        reply.status(500).send({ error: 'Error' });
+      reply.status(500).send({ error: 'Error' });
     }
-}
+  }
 
 export async function putSensor(req, reply) {
     const { id } = req.params;
-
+  
     const parseResult = sensorSchema.omit({ id: true }).safeParse(req.body);
     if (!parseResult.success) {
-        return reply.status(400).send({ error: parseResult.error.message });
+      return reply.status(400).send({ error: parseResult.error.message });
     }
-
+  
     try {
-        await updateSensor(id, parseResult.data);
-        reply.send({ success: true });
+      const updatedSensor = await sensorController.update(id, parseResult.data);
+      reply.send(updatedSensor);
     } catch (err) {
-        reply.status(500).send({ error: 'Error' });
+      reply.status(500).send({ error: 'Error' });
     }
-}
+  }

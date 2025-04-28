@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { fetchDataBySensorAndDate } from '../repositories/sensorRepository.js';
+import { SensorDataRepository } from '../repositories/sensorDataRepository.js';
+
+const sensorDataController = new SensorDataRepository();
+
 
 const querySchema = z.object({
   from: z.coerce.date(),
@@ -18,7 +21,7 @@ export async function getSensorData(req, reply) {
   const { from, to } = parseResult.data;
 
   try {
-    const data = await fetchDataBySensorAndDate(sensor_id, from, to);
+    const data = await sensorDataController.fetchBySensorAndDate(sensor_id, from, to);
     reply.send(data);
   } catch (err) {
     reply.status(500).send({ error: 'Server error' });
