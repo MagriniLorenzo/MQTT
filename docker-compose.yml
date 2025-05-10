@@ -45,6 +45,11 @@ services:
     depends_on:
       - mosquitto
       - postgres
+    volumes:
+      - ./sensor-api:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev
+
 
 volumes:
   pgdata:
