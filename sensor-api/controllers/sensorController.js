@@ -20,7 +20,7 @@ export async function postSensor(req, reply) {
     } catch (err) {
       reply.status(500).send({ error: 'Error' });
     }
-  }
+}
 
   export async function getSensors(req, reply) {
     try {
