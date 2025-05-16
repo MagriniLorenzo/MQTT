@@ -72,7 +72,15 @@ async function callSensorsApi(user) {
   errorMessage.textContent = '';
   try {
     const idToken = await user.getIdToken();
-    const response = await fetch('http://localhost:3000/sensors', {
+    const sensorId = 1;
+    const fromDate = '2023-01-01';
+    const toDate = '2026-01-31';
+
+    const url = new URL(`http://localhost:3000/data/${sensorId}`);
+    url.searchParams.append('from', fromDate);
+    url.searchParams.append('to', toDate);
+
+    const response = await fetch(url.toString(), {
       headers: {
         Authorization: `Bearer ${idToken}`,
       },
@@ -83,6 +91,9 @@ async function callSensorsApi(user) {
     }
 
     const sensorsData = await response.json();
+
+    console.log(sensorsData);
+
     tokenContainer.innerHTML = `
       <h2>Token di Autenticazione</h2>
       <pre id="tokens-data"></pre>
@@ -93,6 +104,7 @@ async function callSensorsApi(user) {
     errorMessage.textContent = err.message;
   }
 }
+
 
 async function getCustomTokenAndAuthenticate(user) {
   errorMessage.textContent = '';
